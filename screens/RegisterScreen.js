@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   KeyboardAvoidingView,
   TextInput,
   Pressable,
@@ -20,10 +19,11 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
 import Message from "../components/Message";
+import pretify from "../utils/pretify";
 
 const RegisterScreen = ({ navigation }) => {
   //--------------------------------------------USE_STATE------------------------------------------------//
-  const [userName, setUserName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -37,37 +37,28 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handlRegister = async () => {
-    const user = {
-      // name: userName,
-      // email: email,
-      // password: password,
-      // phone: phone,
-      // confirmPassword: confirmPassword
-      name: "djani",
-      email: "djani.mohammed.amine@gmail.com",
-      password: "hamahP@i7",
-      phone: "0665134058",
-      confirmPassword: "hamahP@i7",
+    const newUser = {
+      name: name,
+      email: email,
+      password: password,
+      phone: phone,
+      confirmPassword: confirmPassword,
     };
+    if (email && name && phone && password && confirmPassword) {
+      if (password === confirmPassword) {
+        if (errorMessage !== null) {
+          setErrorMessage(null);
+        }
 
-    if (
-      user.email &&
-      user.password &&
-      user.phone &&
-      user.name &&
-      user.confirmPassword
-    ) {
-      // console.log(user);
-      if (errorMessage !== null) {
-        setErrorMessage(null);
-      }
-      if (user.confirmPassword !== user.password) {
-        setErrorMessage("Mots de passe ne sont pas identiques 🧐🧐🧐");
-      } else {
         try {
-          const { data } = await axios.post(`http://localhost:3000//Register`, user);
-          console.log("MOI JE SUIS DATA : " + data);
-          setUserName("");
+          console.log(email, password, phone, name, confirmPassword);
+          const { data } = await axios.post(`http://192.168.1.80:3001/Register`, 
+            newUser,
+          );
+
+          console.log("Data is : " + pretify(data));
+
+          setName("");
           setEmail("");
           setConfirmPassword("");
           setPhone("");
@@ -75,15 +66,17 @@ const RegisterScreen = ({ navigation }) => {
 
           Alert.alert(
             "Inscriptions réussies",
-            "Vous vous êtes bien inscrit 😇😇😇"
+            "Vous êtes bien inscrit 😇😇😇"
           );
         } catch (error) {
           Alert.alert(
-            "Erreur d'enregistrement 🥺🥺🥺",
+            "Erreur d'enregistrement 🥺🥺",
             "une erreur s'est produite lors de l'inscription"
           );
           console.log("registrement échoué", error);
         }
+      } else {
+        setErrorMessage("Mots de passe ne sont pas identiques 🧐🧐🧐");
       }
     } else {
       setErrorMessage("Merci de compléter tous les champs... 😅😅😅");
@@ -109,11 +102,11 @@ const RegisterScreen = ({ navigation }) => {
                 size={24}
               />
               <TextInput
-                value={userName}
+                value={name}
                 onChangeText={(text) => {
-                  setUserName(text);
+                  setName(text);
                 }}
-                name="userName"
+                name="name"
                 placeholder="Nom d'utilisateur..."
                 placeholderTextColor="white"
                 style={{
@@ -121,9 +114,9 @@ const RegisterScreen = ({ navigation }) => {
                   width: 280,
                   marginLeft: 10,
                   color: "black",
-                  fontSize: userName ? 18 : 16,
+                  fontSize: name ? 18 : 16,
                   width: 277,
-                  backgroundColor: userName ? "white" : color,
+                  backgroundColor: name ? "white" : color,
                   height: "75%",
                   borderRadius: 5,
                   paddingLeft: 10,
